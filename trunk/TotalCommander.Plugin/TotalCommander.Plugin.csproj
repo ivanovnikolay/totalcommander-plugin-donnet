@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{5A4C0890-6532-4B1D-9A32-977ECB568A5E}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -87,6 +87,11 @@
     <Compile Include="Wfx\ITotalCommanderWfxPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\LongUtil.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Docs\WCX.hlp" />
+    <None Include="Docs\WDX.hlp" />
+    <None Include="Docs\WFX.hlp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
