@@ -11,6 +11,8 @@ namespace TotalCommander.Plugin.WcxSample
         private readonly IEnumerator<string> files;
         private readonly string archivename;
         private readonly OpenArchiveMode mode;
+        private Progress progress;
+        private ChangeVolume changeVol;
 
 
         public WcxUnpacker(string archivename, OpenArchiveMode mode)
@@ -22,7 +24,12 @@ namespace TotalCommander.Plugin.WcxSample
 
         public void ExtractCurrentTo(string destfile)
         {
-
+            for (int i = 0; i < 10; i++)
+            {
+                if (!progress.SetFirstProgress(files.Current, i * 10)) return;
+                if (!progress.SetSecondProgress(files.Current, i * 5)) return;
+                System.Threading.Thread.Sleep(500);
+            }
         }
 
         public void TestCurrent(string destfile)
@@ -32,23 +39,14 @@ namespace TotalCommander.Plugin.WcxSample
 
         public ArchiveHeader Current
         {
-            get
-            {
-                var fi = new FileInfo(files.Current);
-                return new ArchiveHeader
-                {
-                    ArchiveName = archivename,
-                    FileAttributes = fi.Attributes,
-                    FileName = fi.Name,
-                    FileTime = fi.LastWriteTime,
-                    UnpackedSize = fi.Length,
-                    PackedSize = fi.Length,
-                };
-            }
+            get;
+            private set;
         }
 
         public void Dispose()
         {
+            progress.SetProgress("ddd", -100);
+            progress.SetProgress("ddd", -1100);
             files.Dispose();
         }
 
@@ -59,7 +57,25 @@ namespace TotalCommander.Plugin.WcxSample
 
         public bool MoveNext()
         {
-            return files.MoveNext();
+            var result = files.MoveNext();
+            if (result)
+            {
+                var fi = new FileInfo(files.Current);
+                Current = new ArchiveHeader
+                {
+                    ArchiveName = archivename,
+                    FileAttributes = fi.Attributes,
+                    FileName = fi.Name,
+                    FileTime = fi.LastWriteTime,
+                    UnpackedSize = fi.Length,
+                    PackedSize = fi.Length,
+                };
+            }
+            else
+            {
+                Current = null;
+            }
+            return result;
         }
 
         public void Reset()
@@ -67,19 +83,14 @@ namespace TotalCommander.Plugin.WcxSample
             files.Reset();
         }
 
-        #region IArchiveUnpacker Members
-
-
         public void SetChangeVolume(ChangeVolume changeVolume)
         {
-            
+            changeVol = changeVolume;
         }
 
         public void SetProgress(Progress progress)
         {
-            
+            this.progress = progress;
         }
-
-        #endregion
     }
 }
