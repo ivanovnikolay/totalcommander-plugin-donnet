@@ -64,6 +64,12 @@ namespace TotalCommander.Plugin.Wcx
         }
 
 
+        public virtual void UnhandledException(Exception ex)
+        {
+            
+        }
+
+
         void ITotalCommanderWcxPlugin.SetDefaultParams(DefaultParam dp)
         {
             PluginInterfaceVersion = dp.PluginInterfaceVersion;
@@ -113,6 +119,7 @@ namespace TotalCommander.Plugin.Wcx
             }
             if (unpacker != null)
             {
+                unpacker.SetChangeVolume(changeVolume);
             }
         }
 
@@ -125,6 +132,7 @@ namespace TotalCommander.Plugin.Wcx
             }
             if (unpacker != null)
             {
+                unpacker.SetProgress(progress);
             }
         }
 

@@ -33,5 +33,8 @@ namespace TotalCommander.Plugin.Wcx
         ArchiveResult PackFiles(string archiveName, string subPath, string sourcePath, string[] addList, PackMode mode);
 
         ArchiveResult DeleteFiles(string archiveName, string[] deleteList);
+
+
+        void UnhandledException(Exception ex);
     }
 }

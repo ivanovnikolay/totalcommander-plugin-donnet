@@ -13,38 +13,91 @@ namespace TotalCommander.Plugin.Wcx
 
         public static void PackSetDefaultParams(IntPtr dps)
         {
-            Plugin.SetDefaultParams(new DefaultParam(dps));
+            try
+            {
+                Plugin.SetDefaultParams(new DefaultParam(dps));
+            }
+            catch (Exception ex)
+            {
+                ProcessUnhandledException(ex);
+            }
         }
 
         public static int GetPackerCaps()
         {
-            return (int)Plugin.GetPackerCapabilities();
+            var capabilities = PackerCapabilities.None;
+            try
+            {
+                capabilities = Plugin.GetPackerCapabilities();
+            }
+            catch (Exception ex)
+            {
+                ProcessUnhandledException(ex);
+            }
+            return (int)capabilities;
         }
 
         public static int GetBackgroundFlags()
         {
-            return (int)Plugin.GetBackgroundFlags();
+            var flags = BackgroundFlags.NotSupported;
+            try
+            {
+                flags = Plugin.GetBackgroundFlags();
+            }
+            catch (Exception ex)
+            {
+                ProcessUnhandledException(ex);
+            }
+            return (int)flags;
         }
 
         public static void ConfigurePacker(IntPtr window, IntPtr dllInstance)
         {
-            Plugin.ConfigurePacker(window, dllInstance);
+            try
+            {
+                Plugin.ConfigurePacker(window, dllInstance);
+            }
+            catch (Exception ex)
+            {
+                ProcessUnhandledException(ex);
+            }
         }
 
 
         public static void SetChangeVolProcW(IntPtr archive, ChangeVolume.Callback callback)
         {
-            Plugin.SetChangeVolume(archive, new ChangeVolume(callback));
+            try
+            {
+                Plugin.SetChangeVolume(archive, new ChangeVolume(callback));
+            }
+            catch (Exception ex)
+            {
+                ProcessUnhandledException(ex);
+            }
         }
 
         public static void SetProcessDataProcW(IntPtr archive, Progress.Callback callback)
         {
-            Plugin.SetProgress(archive, new Progress(callback));
+            try
+            {
+                Plugin.SetProgress(archive, new Progress(callback));
+            }
+            catch (Exception ex)
+            {
+                ProcessUnhandledException(ex);
+            }
         }
 
         public static void SetCryptCallbackW(Password.Callback callback, int number, int flags)
         {
-            Plugin.SetPassword(new Password(callback, number, flags));
+            try
+            {
+                Plugin.SetPassword(new Password(callback, number, flags));
+            }
+            catch (Exception ex)
+            {
+                ProcessUnhandledException(ex);
+            }
         }
 
 
@@ -59,6 +112,10 @@ namespace TotalCommander.Plugin.Wcx
             catch (WcxException error)
             {
                 info.Result = error.ArchiveResult;
+            }
+            catch (Exception ex)
+            {
+                ProcessUnhandledException(ex);
             }
             return archive;
         }
@@ -76,6 +133,10 @@ namespace TotalCommander.Plugin.Wcx
             {
                 result = error.ArchiveResult;
             }
+            catch (Exception ex)
+            {
+                ProcessUnhandledException(ex);
+            }
             return (int)result;
         }
 
@@ -89,6 +150,10 @@ namespace TotalCommander.Plugin.Wcx
             catch (WcxException error)
             {
                 result = error.ArchiveResult;
+            }
+            catch (Exception ex)
+            {
+                ProcessUnhandledException(ex);
             }
             return (int)result;
         }
@@ -104,18 +169,48 @@ namespace TotalCommander.Plugin.Wcx
             {
                 result = error.ArchiveResult;
             }
+            catch (Exception ex)
+            {
+                ProcessUnhandledException(ex);
+            }
             return (int)result;
         }
 
 
         public static int PackFiles(string packedFile, string subPath, string srcPath, IntPtr addList, int flags)
         {
-            return (int)Plugin.PackFiles(packedFile, subPath, srcPath, Win32.GetStringArray(addList), (PackMode)flags);
+            var result = ArchiveResult.Default;
+            try
+            {
+                result = Plugin.PackFiles(packedFile, subPath, srcPath, Win32.GetStringArray(addList), (PackMode)flags);
+            }
+            catch (WcxException error)
+            {
+                result = error.ArchiveResult;
+            }
+            catch (Exception ex)
+            {
+                ProcessUnhandledException(ex);
+            }
+            return (int)result;
         }
 
         public static int DeleteFiles(string packedFile, IntPtr deleteList)
         {
-            return (int)Plugin.DeleteFiles(packedFile, Win32.GetStringArray(deleteList));
+            var result = ArchiveResult.Default;
+            try
+            {
+                result = Plugin.DeleteFiles(packedFile, Win32.GetStringArray(deleteList));
+            }
+            catch (WcxException error)
+            {
+                result = error.ArchiveResult;
+            }
+            catch (Exception ex)
+            {
+                ProcessUnhandledException(ex);
+            }
+            return (int)result;
         }
 
         public static int StartMemPack(int options, IntPtr fileName)
@@ -137,6 +232,12 @@ namespace TotalCommander.Plugin.Wcx
         public static bool CanYouHandleThisFile(IntPtr fileName)
         {
             return Plugin.CanYouHandleThisFile(Win32.GetString(fileName));
+        }
+
+
+        private static void ProcessUnhandledException(Exception ex)
+        {
+            Plugin.UnhandledException(ex);
         }
     }
 }
