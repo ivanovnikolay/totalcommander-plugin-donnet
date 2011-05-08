@@ -111,8 +111,8 @@ namespace TotalCommander.Plugin.Wfx
     /// </para>
     /// <strong>How it works:</strong>
     /// <para>
-    /// When a user installs the plugin in Total Commander, the plugin is loaded, class with attribute of type
-    /// <see cref="TotalCommanderPluginAttribute"/> is found and name from attribute will be saved to wincmd.ini.
+    /// When a user installs the plugin in Total Commander, the plugin is loaded, class implemented interface 
+    /// <see cref="ITotalCommanderWfxPlugin"/> is found and will be saved to wincmd.ini.
     /// Then the plugin will be unloaded.
     /// When the user enters Network Neighborhood, Totalcmd will enumerate all plugins listed in wincmd.ini without 
     /// loading the plugins! A plugin will only be loaded when the user tries to enter the plugin root directory.
