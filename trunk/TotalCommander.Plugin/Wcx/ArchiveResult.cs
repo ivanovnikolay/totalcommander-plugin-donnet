@@ -4,6 +4,7 @@ namespace TotalCommander.Plugin.Wcx
     public enum ArchiveResult
     {
         Success = 0,
+        Done,
         EndArchive = 10,
         NoMemory,
         BadData,

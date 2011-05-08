@@ -7,6 +7,7 @@ namespace TotalCommander.Plugin.Wcx
     public abstract class TotalCommanderWcxPlugin : ITotalCommanderWcxPlugin
     {
         private readonly IDictionary<IntPtr, IArchiveUnpacker> unpackers = new Dictionary<IntPtr, IArchiveUnpacker>();
+        private readonly IDictionary<IntPtr, IArchivePacker> packers = new Dictionary<IntPtr, IArchivePacker>();
         private object packerConfiguration;
 
 
@@ -45,7 +46,7 @@ namespace TotalCommander.Plugin.Wcx
         }
 
 
-        public virtual bool CanYouHandleThisFile(string fileName)
+        public virtual bool CanHandleThisFile(string fileName)
         {
             return false;
         }
@@ -53,7 +54,7 @@ namespace TotalCommander.Plugin.Wcx
 
         public abstract IArchiveUnpacker GetUnpacker(string archiveName, OpenArchiveMode mode);
 
-        public virtual IArchivePacker GetPacker(string archiveName, object configuration)
+        public virtual IArchivePacker GetPacker(string archiveName, object configuration, MemoryPackMode memoryPackMode)
         {
             return null;
         }
@@ -66,7 +67,7 @@ namespace TotalCommander.Plugin.Wcx
 
         public virtual void UnhandledException(Exception ex)
         {
-            
+
         }
 
 
@@ -211,7 +212,7 @@ namespace TotalCommander.Plugin.Wcx
         ArchiveResult ITotalCommanderWcxPlugin.PackFiles(string archiveName, string subPath, string sourcePath, string[] addList, PackMode mode)
         {
             var result = ArchiveResult.Default;
-            var packer = GetPacker(archiveName, packerConfiguration);
+            var packer = GetPacker(archiveName, packerConfiguration, MemoryPackMode.None);
             if (packer != null)
             {
                 packer.PackFiles(subPath, sourcePath, addList, mode);
@@ -223,10 +224,49 @@ namespace TotalCommander.Plugin.Wcx
         ArchiveResult ITotalCommanderWcxPlugin.DeleteFiles(string archiveName, string[] deleteList)
         {
             var result = ArchiveResult.Default;
-            var packer = GetPacker(archiveName, packerConfiguration);
+            using (var packer = GetPacker(archiveName, packerConfiguration, MemoryPackMode.None))
+            {
+                if (packer != null)
+                {
+                    packer.DeleteFiles(deleteList);
+                    result = ArchiveResult.Success;
+                }
+            }
+            return result;
+        }
+
+
+        IntPtr ITotalCommanderWcxPlugin.StartMemoryPack(MemoryPackMode options, string fileName)
+        {
+            throw new NotImplementedException();
+        }
+
+        ArchiveResult ITotalCommanderWcxPlugin.PackToMemory(IntPtr hMemPack, byte[] bufIn, ref Int32 taken, byte[] bufOut, ref Int32 written, int seekBy)
+        {
+            var result = ArchiveResult.Default;
+            IArchivePacker packer;
+            lock (packers)
+            {
+                packers.TryGetValue(hMemPack, out packer);
+            }
             if (packer != null)
             {
-                packer.DeleteFiles(deleteList);
+                result = packer.PackInMemory(bufIn, ref taken, bufOut, ref written, seekBy) ? ArchiveResult.Done : ArchiveResult.Success;
+            }
+            return result;
+        }
+
+        ArchiveResult ITotalCommanderWcxPlugin.DoneMemoryPack(IntPtr hMemPack)
+        {
+            var result = ArchiveResult.Default;
+            IArchivePacker packer;
+            lock (packers)
+            {
+                if (packers.TryGetValue(hMemPack, out packer)) packers.Remove(hMemPack);
+            }
+            if (packer != null)
+            {
+                packer.Dispose();
                 result = ArchiveResult.Success;
             }
             return result;

@@ -213,25 +213,60 @@ namespace TotalCommander.Plugin.Wcx
             return (int)result;
         }
 
-        public static int StartMemPack(int options, IntPtr fileName)
+        public static IntPtr StartMemPack(int options, IntPtr fileName)
         {
-            return 0;
+            var result = IntPtr.Zero;
+            try
+            {
+                result = Plugin.StartMemoryPack((MemoryPackMode)options, Win32.GetString(fileName));
+            }
+            catch (Exception ex)
+            {
+                ProcessUnhandledException(ex);
+            }
+            return result;
         }
 
-        public static int PackToMem(int hMemPack, IntPtr bufIn, int inLen, ref Int32 taken, IntPtr bufOut, int outLen, ref Int32 written, int seekBy)
+        public static int PackToMem(IntPtr hMemPack, byte[] bufIn, ref Int32 taken, byte[] bufOut, ref Int32 written, int seekBy)
         {
-            return 0;
+            var result = ArchiveResult.Default;
+            try
+            {
+                result = Plugin.PackToMemory(hMemPack, bufIn, ref taken, bufOut, ref written, seekBy);
+            }
+            catch (WcxException error)
+            {
+                result = error.ArchiveResult;
+            }
+            catch (Exception ex)
+            {
+                ProcessUnhandledException(ex);
+            }
+            return (int)result;
         }
 
-        public static int DoneMemPack(int hMemPack)
+        public static int DoneMemPack(IntPtr hMemPack)
         {
-            return 0;
+            var result = ArchiveResult.Default;
+            try
+            {
+                result = Plugin.DoneMemoryPack(hMemPack);
+            }
+            catch (WcxException error)
+            {
+                result = error.ArchiveResult;
+            }
+            catch (Exception ex)
+            {
+                ProcessUnhandledException(ex);
+            }
+            return (int)result;
         }
 
 
         public static bool CanYouHandleThisFile(IntPtr fileName)
         {
-            return Plugin.CanYouHandleThisFile(Win32.GetString(fileName));
+            return Plugin.CanHandleThisFile(Win32.GetString(fileName));
         }
 
 

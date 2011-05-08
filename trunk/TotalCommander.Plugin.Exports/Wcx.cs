@@ -141,19 +141,27 @@ namespace TotalCommander.Plugin.Exports
         }
 
         [DllExport]
-        public static int StartMemPackW(int options, IntPtr fileName)
+        public static IntPtr StartMemPackW(int options, IntPtr fileName)
         {
             return WcxDispatcher.StartMemPack(options, fileName);
         }
 
         [DllExport]
-        public static int PackToMem(int hMemPack, IntPtr bufIn, int inLen, ref Int32 taken, IntPtr bufOut, int outLen, ref Int32 written, int seekBy)
+        public static int PackToMem(
+            IntPtr hMemPack, 
+            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)] byte[] bufIn, 
+            int inLen, 
+            ref Int32 taken,
+            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 5)] byte[] bufOut, 
+            int outLen, 
+            ref Int32 written, 
+            int seekBy)
         {
-            return WcxDispatcher.PackToMem(hMemPack, bufIn, inLen, ref taken, bufOut, outLen, ref written, seekBy);
+            return WcxDispatcher.PackToMem(hMemPack, bufIn, ref taken, bufOut, ref written, seekBy);
         }
 
         [DllExport]
-        public static int DoneMemPack(int hMemPack)
+        public static int DoneMemPack(IntPtr hMemPack)
         {
             return WcxDispatcher.DoneMemPack(hMemPack);
         }

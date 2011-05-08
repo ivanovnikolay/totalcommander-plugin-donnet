@@ -12,7 +12,7 @@ namespace TotalCommander.Plugin.Wcx
 
         PackerCapabilities GetPackerCapabilities();
 
-        bool CanYouHandleThisFile(string fileName);
+        bool CanHandleThisFile(string fileName);
 
         
         ArchiveResult OpenArchive(string archiveName, OpenArchiveMode mode, out IntPtr archive);
@@ -35,6 +35,13 @@ namespace TotalCommander.Plugin.Wcx
         ArchiveResult DeleteFiles(string archiveName, string[] deleteList);
 
 
+        IntPtr StartMemoryPack(MemoryPackMode options, string fileName);
+
+        ArchiveResult PackToMemory(IntPtr hMemPack, byte[] bufIn, ref Int32 taken, byte[] bufOut, ref Int32 written, int seekBy);
+
+        ArchiveResult DoneMemoryPack(IntPtr hMemPack);
+        
+        
         void UnhandledException(Exception ex);
     }
 }
